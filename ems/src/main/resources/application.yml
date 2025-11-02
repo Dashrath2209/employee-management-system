@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: employee-management-system
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ems?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: 8801
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Let Flyway handle schema
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+# Custom properties
+app:
+  jwt:
+    secret: YourSuperSecretKeyMustBeAtLeast32CharactersLongForHS256Algorithm
+    expirationMs: 86400000  # 24 hours
+
+file:
+  upload-dir: uploads
