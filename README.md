@@ -1,132 +1,94 @@
-```markdown
-# 🚀 Employee Management System (Spring Boot REST API)
+# Employee Management System
 
-A **production-ready REST API backend** built with **Spring Boot 3**, **MySQL**, **JPA**, **JWT Authentication**, and **Flyway migrations**.  
-This guide walks you through building, running, and deploying the project step-by-step.
+A REST API backend for managing employee records, built with Spring Boot 3, MySQL, and JWT authentication.
 
----
+## What You Need
 
-## 📋 Prerequisites
+- IntelliJ IDEA
+- JDK 21
+- MySQL Server running on localhost:3306
+- Postman or similar tool for testing APIs
 
-Before starting, ensure the following tools are installed and running:
+## Getting Started
 
-- [ ] **IntelliJ IDEA** (Community/Ultimate)
-- [ ] **JDK 21**
-- [ ] **MySQL Server** (`localhost:3306`)
-- [ ] **MySQL Workbench** (optional)
-- [ ] **Postman/Thunder Client** for API testing
+### Create the Project
 
----
+**Using IntelliJ:**
+1. File → New → Project
+2. Select Spring Initializr
+3. Fill in:
+   - Name: `employee-management-system`
+   - Group: `com.jayaa`
+   - Artifact: `ems`
+   - Package: `com.jayaa.ems`
+   - JDK: 21
+   - Type: Maven
+   - Packaging: Jar
 
-## ⚙️ Project Initialization
+**Using start.spring.io:**
+1. Visit https://start.spring.io
+2. Use the same settings above
+3. Download and extract the ZIP
+4. Open in IntelliJ
 
-### 1️⃣ Create the Project
+### Add Dependencies
 
-#### Option A: IntelliJ Spring Initializr
-1. Open IntelliJ → **File → New → Project**
-2. Select **Spring Initializr**
-3. Configure:
-```
+Add these to your `pom.xml`:
 
-Name: employee-management-system
-Group: com.jayaa
-Artifact: ems
-Package: com.jayaa.ems
-JDK: 21
-Type: Maven
-Packaging: Jar
-Language: Java
-
-````
-
-4. Click **Next**
-
-#### Option B: Web Initializr
-1. Go to [https://start.spring.io](https://start.spring.io)
-2. Set the same fields as above
-3. Add dependencies and download the project ZIP
-4. Extract and open in IntelliJ
-
----
-
-## 🧩 Dependencies
-
-### Essential:
-- Spring Web
-- Spring Data JPA
-- MySQL Driver
-- Spring Security
-- Validation
-- Lombok (optional)
-
-### Additional (`pom.xml`):
+**JWT Authentication:**
 ```xml
-<!-- JWT Authentication -->
 <dependency>
- <groupId>io.jsonwebtoken</groupId>
- <artifactId>jjwt-api</artifactId>
- <version>0.11.5</version>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
 </dependency>
 <dependency>
- <groupId>io.jsonwebtoken</groupId>
- <artifactId>jjwt-impl</artifactId>
- <version>0.11.5</version>
- <scope>runtime</scope>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
 </dependency>
 <dependency>
- <groupId>io.jsonwebtoken</groupId>
- <artifactId>jjwt-jackson</artifactId>
- <version>0.11.5</version>
- <scope>runtime</scope>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
 </dependency>
-
-<!-- Flyway for DB migrations -->
-<dependency>
- <groupId>org.flywaydb</groupId>
- <artifactId>flyway-core</artifactId>
-</dependency>
-<dependency>
- <groupId>org.flywaydb</groupId>
- <artifactId>flyway-mysql</artifactId>
-</dependency>
-
-<!-- Swagger / OpenAPI -->
-<dependency>
- <groupId>org.springdoc</groupId>
- <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
- <version>2.3.0</version>
-</dependency>
-
-<!-- ModelMapper -->
-<dependency>
- <groupId>org.modelmapper</groupId>
- <artifactId>modelmapper</artifactId>
- <version>3.2.0</version>
-</dependency>
-````
-
----
-
-## 🏗️ Folder Structure
-
-```
-com.jayaa.ems
-├── config/          # Security + App Config
-├── controller/      # REST Endpoints
-├── dto/             # Data Transfer Objects
-├── exception/       # Custom Exceptions
-├── model/           # JPA Entities
-├── repository/      # Data Access Layer
-├── security/        # JWT & Filters
-├── service/         # Business Logic
-└── util/            # Helper Utilities
 ```
 
----
+**Database Migrations:**
+```xml
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-core</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-mysql</artifactId>
+</dependency>
+```
 
-## 🗄️ Database Setup
+**API Documentation:**
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.3.0</version>
+</dependency>
+```
 
-### 1️⃣ Create MySQL Database
+**Object Mapping:**
+```xml
+<dependency>
+    <groupId>org.modelmapper</groupId>
+    <artifactId>modelmapper</artifactId>
+    <version>3.2.0</version>
+</dependency>
+```
+
+## Database Setup
+
+Open MySQL Workbench or your MySQL client and run:
 
 ```sql
 CREATE DATABASE ems CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -135,7 +97,7 @@ GRANT ALL PRIVILEGES ON ems.* TO 'ems_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 2️⃣ Configure `application.yml`
+Create `src/main/resources/application.yml`:
 
 ```yaml
 spring:
@@ -176,183 +138,150 @@ file:
   upload-dir: uploads
 ```
 
----
-
-## 🧱 Entities (Model Layer)
-
-* **Employee**
-* **AppUser**
-
-Defined with JPA annotations and managed by Flyway migrations.
-
-Migration file: `src/main/resources/db/migration/V1__init.sql`
-
----
-
-## 🧬 Repository Layer
-
-* `EmployeeRepository`
-* `UserRepository`
-
-Includes `@Query` support and pagination.
-
----
-
-## 💼 Service Layer
-
-* **EmployeeService**: CRUD, pagination, search, validations
-* **AuthService**: Registration, Login, JWT generation
-
-Uses `@Transactional` and `BCryptPasswordEncoder`.
-
----
-
-## 🔐 Security Layer
-
-* **JwtUtil** → Token creation & validation
-* **JwtFilter** → Request-level authentication
-* **SecurityConfig** → Endpoint protection + stateless session
-
-### Exposed (Permit All)
+## Project Structure
 
 ```
-/auth/**
-/v3/api-docs/**
-/swagger-ui/**
-/swagger-ui.html
+com.jayaa.ems/
+├── config/         Security and application configuration
+├── controller/     REST API endpoints
+├── dto/            Data transfer objects
+├── exception/      Custom exception classes
+├── model/          JPA entities
+├── repository/     Database access layer
+├── security/       JWT utilities and filters
+├── service/        Business logic
+└── util/           Helper classes
 ```
 
----
+## Database Migrations
 
-## 🧠 Controller Layer
+Create `src/main/resources/db/migration/V1__init.sql` with your table definitions for Employee and AppUser entities. Flyway will automatically run this on startup.
 
-### `/auth`
+## API Endpoints
 
-* `POST /auth/register` → Register new user
-* `POST /auth/login` → Login + JWT token
+### Authentication
 
-### `/api/employees`
+**Register a new user:**
+```
+POST /auth/register
+Content-Type: application/json
 
-* `GET /api/employees` → List all employees (Paginated)
-* `GET /api/employees/{id}` → Get employee by ID
-* `POST /api/employees` → Create employee *(Admin only)*
-* `PUT /api/employees/{id}` → Update employee *(Admin only)*
-* `DELETE /api/employees/{id}` → Delete employee *(Admin only)*
-* `GET /api/employees/search?q=John` → Search employees
-
----
-
-## 🧾 Exception Handling
-
-Create `ResourceNotFoundException` and global exception handler under `exception/`.
-
----
-
-## 🧪 Testing APIs
-
-### 1️⃣ Register User
-
-`POST /auth/register`
-
-```json
 {
   "username": "user1",
   "password": "password123"
 }
 ```
 
-### 2️⃣ Login
+**Login:**
+```
+POST /auth/login
+Content-Type: application/json
 
-`POST /auth/login`
-
-```json
 {
   "username": "user1",
   "password": "password123"
 }
 ```
 
-Response → JWT Token
-Use this token for all `/api/employees` routes.
+Returns a JWT token. Use this token in the Authorization header for protected endpoints.
 
-### 3️⃣ Test CRUD APIs
+### Employee Management
 
-Add header:
-`Authorization: Bearer <token>`
-
----
-
-## 📘 Swagger API Docs
-
-Once running:
-
+All employee endpoints require authentication. Add the header:
 ```
-http://localhost:8080/swagger-ui.html
+Authorization: Bearer <your-jwt-token>
 ```
 
----
+**Get all employees (paginated):**
+```
+GET /api/employees?page=0&size=10
+```
 
-## 🚀 Build & Run
+**Get employee by ID:**
+```
+GET /api/employees/{id}
+```
 
-### Run via IntelliJ
+**Create employee (admin only):**
+```
+POST /api/employees
+Content-Type: application/json
 
-Click ▶️ next to `EmsApplication.java`
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "department": "Engineering"
+}
+```
 
-### Run via Maven
+**Update employee (admin only):**
+```
+PUT /api/employees/{id}
+Content-Type: application/json
 
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.updated@example.com",
+  "department": "Engineering"
+}
+```
+
+**Delete employee (admin only):**
+```
+DELETE /api/employees/{id}
+```
+
+**Search employees:**
+```
+GET /api/employees/search?q=John
+```
+
+## Running the Application
+
+**From IntelliJ:**
+Click the run button next to `EmsApplication.java`
+
+**From terminal:**
 ```bash
 ./mvnw clean install
 ./mvnw spring-boot:run
 ```
 
----
+The application starts on http://localhost:8080
 
-## 🧰 Build Output
+**Default admin credentials:**
+- Username: `admin`
+- Password: `admin123`
 
-```
-Application started on http://localhost:8080
-```
+## API Documentation
 
-Default Admin Login (from Flyway):
+Once running, visit http://localhost:8080/swagger-ui.html for interactive API documentation.
 
-```
-Username: admin
-Password: admin123
-```
+## Security
 
----
+The application uses JWT-based authentication with Spring Security. Public endpoints include authentication routes and API documentation. All other endpoints require a valid JWT token.
 
-## ✅ Project Summary
+Token expiration is set to 24 hours by default.
 
-| Layer              | Description                       | Status |
-| ------------------ | --------------------------------- | ------ |
-| Model + Migration  | Entities & Flyway setup           | ✅      |
-| Repository         | Data access + search + pagination | ✅      |
-| Service            | CRUD + Auth business logic        | ✅      |
-| Security           | JWT + Spring Security integration | ✅      |
-| Controller         | REST endpoints                    | ✅      |
-| Exception Handling | Custom exceptions & validation    | ✅      |
-| Testing            | Postman & Swagger verified        | ✅      |
-| Deployment Ready   | Yes                               | ✅      |
+## Future Enhancements
 
----
+Consider adding:
+- File upload for employee profile images
+- Audit logging using Spring AOP
+- Refresh token mechanism
+- Docker containerization
+- CI/CD pipeline
+- Cloud deployment configuration
 
-## 🌍 Next Steps (Optional Enhancements)
+## Troubleshooting
 
-* [ ] Add file upload for employee profile images
-* [ ] Add audit logging (Spring AOP)
-* [ ] Add refresh tokens for JWT
-* [ ] Containerize with Docker
-* [ ] CI/CD using GitHub Actions
-* [ ] Deploy to AWS EC2 / Render
+**Database connection issues:**
+Verify MySQL is running and credentials in `application.yml` match your database setup.
 
----
+**JWT token errors:**
+Ensure the secret key in `application.yml` is at least 32 characters for HS256 algorithm.
 
-### 🏁 You’re Ready!
-
-You now have a **fully functional, secure, and scalable Spring Boot REST API**
-for Employee Management — ready for production deployment.
----
-
-```
-```
+**Flyway migration failures:**
+Check that your migration files follow the naming convention `V{version}__{description}.sql`
